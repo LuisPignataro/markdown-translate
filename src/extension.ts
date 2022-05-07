@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// The code you place here will be executed every time your command is executed
 			let panel = vscode.window.createWebviewPanel(
 				"textarea", // viewType
-				"空白页面", // 视图标题
+				"Nueva pagina", // 视图标题
 				vscode.ViewColumn.Three, // 显示在编辑器的哪个部位
 				{
 				  enableScripts: true, // 启用JS，默认禁用

@@ -23,7 +23,7 @@
     "commands": [
       {
         "command": "extension.ppy.showTextarea",
-        "title": "新建空白页(new empty page)",
+        "title": "New empty page",
         "icon": {
           "light": "./images/note.svg",
           "dark": "./images/note.svg"
@@ -31,7 +31,7 @@
       },
       {
         "command": "extension.ppy.translate",
-        "title": "翻译文件(markdown translate)",
+        "title": "Markdown translate",
         "icon": {
           "light": "./images/translate.svg",
           "dark": "./images/translate.svg"
@@ -39,7 +39,7 @@
       },
       {
         "command": "extension.ppy.preview",
-        "title": "预览(markdown preview)",
+        "title": "Markdown preview",
         "icon": {
           "light": "./images/eyes.svg",
           "dark": "./images/eyes.svg"
@@ -107,6 +107,7 @@
     "psl": "^1.1.33",
     "request": "^2.88.0",
     "tough-cookie": "^3.0.1",
+    "turndown": "^7.1.1",
     "urlencode": "^1.1.0"
   },
   "__npminstall_done": false

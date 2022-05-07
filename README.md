@@ -1,10 +1,10 @@
 # README
 
-// TODO 1 右键保存翻译文件,以便下次打开时不用再翻译
+// TODO 1 Haga clic derecho para guardar el archivo de traducción, de modo que no necesite traducirlo la próxima vez que lo abra
 
-// TODO 2 右键翻译
+// TODO 2 click derecho para traducir
 
-由于经常在github上查看源码,特别是readme.mk文件
+看源码,特由于经常在github上查别是readme.mk文件
 
 因此使用vscode 插件 markdown-translate
 

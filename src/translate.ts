@@ -74,7 +74,7 @@ export default class TranslateMd {
 
       console.log(encode);
       
-      let url: any = `https://translate.google.cn/translate_a/single?client=webapp&sl=en&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&pc=1&otf=1&ssel=0&tsel=0&kc=1${tkkk}&q=${encode}`; 
+      let url: any = `https://translate.google.cn/translate_a/single?client=webapp&sl=en&tl=es-MX&hl=es-MX&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&pc=1&otf=1&ssel=0&tsel=0&kc=1${tkkk}&q=${encode}`; 
      
       let translateRst: any = await getPromise(url);
       // 可以加入 try catch 捕获异常  也可以加 .catch()
@@ -93,52 +93,70 @@ export default class TranslateMd {
   }
 
   public async launch() {
+
+    vscode.window.withProgress({
+      location: vscode.ProgressLocation.Window,
+      cancellable: false,
+      title: 'Traduciendo'
+      }, async (progress) => {
+          
+          progress.report({  increment: 0 });
+      
+          var result =  await this.traslate();
+
+          var edit = await this.openWindow();
+          if(edit){
+            edit.edit(editBuilder=> editBuilder.insert(new vscode.Position(0,0), result));
+          }
+          progress.report({ increment: 100 });
+      });
+  }
+
+  public async openWindow(): Promise<vscode.TextEditor | undefined>{
+    const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
+
+    if(editor){
+      const fileName = 'untitled-traslated.md';
+      var uri = vscode.Uri.file(fileName).with({scheme: 'untitled', path: fileName});
+
+      var doc = await vscode.workspace.openTextDocument(uri)
+      var edit = await vscode.window.showTextDocument(doc, editor.viewColumn! + 1)
+      
+      return edit;
+    }
+  }
+
+  public async traslate() {
     const editor: any = vscode.window.activeTextEditor;
+    
     if (editor) {
       const document: any = editor.document;
       if (document) {
         const selectedText: any = document.getText();
 
-        this.panel = vscode.window.createWebviewPanel(
-          "testWelcome", // viewType
-          "翻译页面", // 视图标题
-          vscode.ViewColumn.Two, // 显示在编辑器的哪个部位
-          {
-            enableScripts: true, // 启用JS，默认禁用
-          },
-        );
-        
-        var md = require('markdown-it')();
-       
-         
-        // let tokens2 = md.parse(selectedText)
-        // console.log(tokens2)
-        
-
         const tokens: any = marked.lexer(selectedText); // 把text解析为一个marked.js的内部对象
         for (const key in tokens) {
-         
+          
           const query: any = tokens[key].text;
           if (undefined !== query) {
-           
+            
             let result: any = await this.doExe(query)
             console.log(result)
             tokens[key].text = result;
 
           }
         }
+  
+          const rendererResult: any = marked.parser(tokens); // 又把这个对象转化为html字符串。（<p>text</p>）
+         // if(newEditor)
+         //   newEditor.insert(new vscode.Position(0, 0),rendererResult);
+         var TurndownService = require('turndown')
+         var turndownService = new TurndownService({
+          headingStyle: 'atx',
+          bulletListMarker: '*'
+         });
 
-        const rendererResult: any = marked.parser(tokens); // 又把这个对象转化为html字符串。（<p>text</p>）
-
-        // const rendererResult = renderer.render(tokens2);
-        // console.log(rendererResult)
-        this.panel.webview.html = rendererResult;
-        
-        this.panel.webview.onDidReceiveMessage(
-          (message) => {},
-          null,
-          this.disposables,
-        );
+         return turndownService.turndown(rendererResult);
       }
     }
   }
