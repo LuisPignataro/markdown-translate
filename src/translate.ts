@@ -138,12 +138,13 @@ export default class TranslateMd {
         for (const key in tokens) {
           
           const query: any = tokens[key].text;
-          if (undefined !== query) {
+          if (undefined !== query ) {
             
-            let result: any = await this.doExe(query)
-            console.log(result)
-            tokens[key].text = result;
-
+            if(tokens[key].type !== 'code'){
+              let result: any = await this.doExe(query)
+              console.log(result)
+              tokens[key].text = result;
+            }
           }
         }
   
@@ -153,7 +154,8 @@ export default class TranslateMd {
          var TurndownService = require('turndown')
          var turndownService = new TurndownService({
           headingStyle: 'atx',
-          bulletListMarker: '*'
+          bulletListMarker: '*',
+          codeBlockStyle: 'fenced'
          });
 
          return turndownService.turndown(rendererResult);
