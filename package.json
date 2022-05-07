@@ -2,11 +2,11 @@
   "name": "markdown-translate",
   "displayName": "markdown translate",
   "description": "markdown readme translate",
-  "version": "0.2.2",
+  "version": "0.3",
   "publisher": "markdown-translate",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kana112233/markdown-translate.git"
+    "url": "https://github.com/LuisPignataro/markdown-translate.git"
   },
   "engines": {
     "vscode": "^1.31.0"
