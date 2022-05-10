@@ -12,7 +12,7 @@ import * as util from 'util';
 export default class TranslateMd {
   private disposables: vscode.Disposable[] = [];
   private panel: vscode.WebviewPanel | null;
-
+  
   private tkk: any = '429175.1243284773'
 
   constructor() {
@@ -94,18 +94,25 @@ export default class TranslateMd {
     
     for (const key in tokens) {
       if(tokens[key].type !== 'code'){
+        
+        if(key==='links') break;
+
           if(tokens[key].type === 'paragraph'){
             tokens[key].tokens = await this.traslateTokens(tokens[key].tokens);
           }else{
 
-            console.log("Antes:", tokens[key]);
+            if(tokens[key].tokens){
+              tokens[key].tokens = await this.traslateTokens(tokens[key].tokens);
+            }
+
+            console.log("Antes:", key, tokens[key].type, tokens[key].text);
             const query: any = tokens[key].text;
 
             if (undefined !== query ) {
               let result: any = await this.doExe(query)
-              
+              console.log(result);
               tokens[key].text = result;
-              console.log("Despues:", tokens[key]);
+              console.log("Despues:", key, tokens[key].type, tokens[key].text);
             }
 
           }
@@ -160,7 +167,7 @@ export default class TranslateMd {
         var tokens: any = marked.lexer(selectedText); // Parse and return array of token marked.js
         tokens = await this.traslateTokens(tokens);
 
-        const rendererResult: any = marked.parse(tokens);
+        const rendererResult: any = marked.parser(tokens);
 
         return rendererResult;
 
