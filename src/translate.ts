@@ -72,8 +72,6 @@ export default class TranslateMd {
 
       const tkkk = this.tk(word, this.tkk)
 
-      console.log(encode);
-      
       let url: any = `https://translate.google.cn/translate_a/single?client=webapp&sl=en&tl=es-MX&hl=es-MX&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&pc=1&otf=1&ssel=0&tsel=0&kc=1${tkkk}&q=${encode}`; 
      
       let translateRst: any = await getPromise(url);
@@ -83,13 +81,38 @@ export default class TranslateMd {
   
       let tranWord: any = JSON.parse(translateRst.body);
       let result: any = tranWord[0][0][0]
-      console.log(result)
+
       return result;
       // return 'error:: '
      } catch (error) {
         return 'error:: '+error
      }
     
+  }
+
+  async traslateTokens(tokens : [any]){
+    
+    for (const key in tokens) {
+      if(tokens[key].type !== 'code'){
+          if(tokens[key].type === 'paragraph'){
+            tokens[key].tokens = await this.traslateTokens(tokens[key].tokens);
+          }else{
+
+            console.log("Antes:", tokens[key]);
+            const query: any = tokens[key].text;
+
+            if (undefined !== query ) {
+              let result: any = await this.doExe(query)
+              
+              tokens[key].text = result;
+              console.log("Despues:", tokens[key]);
+            }
+
+          }
+      }
+    }
+
+    return tokens;
   }
 
   public async launch() {
@@ -134,25 +157,16 @@ export default class TranslateMd {
       if (document) {
         const selectedText: any = document.getText();
 
-        const tokens: any = marked.lexer(selectedText); // 把text解析为一个marked.js的内部对象
-        for (const key in tokens) {
-          
-          const query: any = tokens[key].text;
-          if (undefined !== query ) {
-            
-            if(tokens[key].type !== 'code'){
-              let result: any = await this.doExe(query)
-              console.log(result)
-              tokens[key].text = result;
-            }
-          }
-        }
-  
-          const rendererResult: any = marked.parser(tokens); // 又把这个对象转化为html字符串。（<p>text</p>）
-         // if(newEditor)
-         //   newEditor.insert(new vscode.Position(0, 0),rendererResult);
-         var TurndownService = require('turndown')
-         var turndownService = new TurndownService({
+        var tokens: any = marked.lexer(selectedText); // Parse and return array of token marked.js
+        tokens = await this.traslateTokens(tokens);
+
+        const rendererResult: any = marked.parse(tokens);
+
+        return rendererResult;
+
+        //Render html to MarkDown
+        var TurndownService = require('turndown')
+        var turndownService = new TurndownService({
           headingStyle: 'atx',
           bulletListMarker: '*',
           codeBlockStyle: 'fenced'
